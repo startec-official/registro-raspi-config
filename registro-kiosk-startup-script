@@ -1,0 +1,38 @@
+# STARTUP SCRIPT INSTRUCTIONS
+# Startec Registro Raspberry Pi Kiosk
+
+## BROWSER AUTOSTART
+# STEP 1 : create a desktop file to run the browser on startup
+sudo nano /etc/xdg/autostart/registro.desktop
+
+# STEP 2 : place these lines inside the file
+[Desktop Entry]
+Exec=chromium-browser http://localhost --start-fullscreen
+
+## NODE SERVER AUTOSTART
+# STEP 1 : create a service file inside the corresponding folder
+sudo nano /etc/systemd/system/registro.service
+
+# STEP 2 : place this inside the file
+[Service]
+WorkingDirectory=/home/pi/server/registro-raspi-server
+ExecStart=/home/pi/server/registro-raspi-server/server.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=registro
+User=root
+Group=root
+Environment=NODE_ENV=production
+[Install]
+WantedBy=multi-user.target
+
+# STEP 3 : make this script executable
+sudo chmod u+rwx /etc/systemd/system/registro.service
+
+# STEP 4 : enable and start the service
+sudo systemctl enable registro
+sudo systemctl start registro
+
+# SIDE NOTE: You can check the log output of this function in the log file
+cat /var/log/syslog
